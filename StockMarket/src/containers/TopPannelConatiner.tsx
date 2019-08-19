@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import {FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {RouteNames} from '../navigation/routes';
+import axios from 'axios';
 
 interface IState {
-    dataSource: {};
+    dataSource: object;
+    price: object[];
+    stockEndPrice: string[] ;
 }
 
 interface IProps {
@@ -13,15 +16,23 @@ interface IProps {
 }
 
 class TopPannelConatiner extends Component<IProps, IState> {
-    constructor(props: IProps) {
-        super(props);
-        this.state = {
-            dataSource: {},
-        };
-    }
+    public state = {
+        dataSource: {},
+        price: [],
+        stockEndPrice: [],
+    };
+
     public componentDidMount() {
+        axios.get('https://api.airtable.com/v0/appaf01a2JbZoZNee/stock%20market?api_key=keyiMCbcYlCf5VXsP')
+            .then((res) => {
+                this.setState({
+                    price: res.data.records,
+                });
+
+            });
+
         const items = Array.apply(null, Array(30)).map((v, i) => {
-            return { id: i, src: 'http://placehold.it/50x50?text=' + (i + 1) };
+            return (i + 1);
         });
         this.setState({
             dataSource: items,
@@ -30,10 +41,14 @@ class TopPannelConatiner extends Component<IProps, IState> {
 
     public handlePress = () => {
         this.props.navigation.navigate(RouteNames.stock);
-    };
+    }
 
     public render() {
-        return (
+       const ele =  this.state.price.map(stockPrice => {
+          return stockPrice.fields.Close;
+        });
+
+       return (
             <View style={styles.container}>
             <FlatList
                 data={this.state.dataSource}
@@ -41,15 +56,26 @@ class TopPannelConatiner extends Component<IProps, IState> {
                 ListHeaderComponent={this.renderHeader}
                 numColumns={3}
                 keyExtractor={this.keyExtractor}
+                extraData={this.state.price}
             />
             </View>
         );
     }
 
-    private renderListItem = ({item}: {item: any}): React.ReactElement => {
+    private renderListItem = ({item}: {item: any, ele: any}): React.ReactElement => {
+        // console.log(this.state.stockEndPrice, 'dj')
         return (
             <TouchableOpacity style={styles.dateContainer} onPress={this.handlePress}>
-                <Image style={styles.imageThumbnail} source={{ uri: item.src }} />
+                <View style={styles.box}>
+                    <Text style={styles.itemStyle}>
+                        {item}
+                    </Text>
+                    <Text>
+                        {this.state.price.map(stockPrice => {
+                            return stockPrice.fields.Close;
+                        })}
+                    </Text>
+                </View>
             </TouchableOpacity>
         );
     }
@@ -92,6 +118,16 @@ const styles = StyleSheet.create({
         fontFamily: 'Georgia-Bold',
         fontSize: 25,
         letterSpacing: 0.13,
+    },
+    box: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#d2d4d2',
+        height: 70,
+        margin: 1,
+    },
+    itemStyle: {
+        fontSize: 20,
     },
 });
 

@@ -25,18 +25,12 @@ class PriceContainer extends Component<any, IState> {
     public render() {
         return (
             <Fragment>
-                <View style={styles.sectionStyle}>
-                    <Image
-                        source={{uri: 'https://image.flaticon.com/icons/png/128/126/126179.png'}}
-                        style={{width: 20, height: 20}}
-                    />
-                    <TextInput
-                        style={{flex: 1}}
-                        onChangeText={this.onChange}
-                        value={this.state.price}
-                        keyboardType={'numeric'}
-                    />
-                </View>
+                <TextInput
+                    style={styles.inputStyle}
+                    onChangeText={this.onChange}
+                    value={this.state.price}
+                    keyboardType={'numeric'}
+                />
                 <Button title={'Save'} onPress={this.handleClick} />
             </Fragment>
         );
@@ -44,17 +38,15 @@ class PriceContainer extends Component<any, IState> {
 }
 
 const styles = StyleSheet.create({
-    sectionStyle: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        borderWidth: 0.5,
-        borderColor: '#000',
-        height: 40,
-        borderRadius: 5,
-        margin: 10,
-    },
+  inputStyle: {
+      height: 30,
+      width: 150,
+      borderColor: 'black',
+      borderWidth: 2,
+      borderRadius: 5,
+      marginTop: '5%',
+      marginBottom: '5%',
+  },
 });
 
 export default PriceContainer;
