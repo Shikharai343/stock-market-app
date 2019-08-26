@@ -44,10 +44,6 @@ class TopPannelConatiner extends Component<IProps, IState> {
     }
 
     public render() {
-       const ele =  this.state.price.map(stockPrice => {
-          return stockPrice.fields.Close;
-        });
-
        return (
             <View style={styles.container}>
             <FlatList
@@ -56,25 +52,28 @@ class TopPannelConatiner extends Component<IProps, IState> {
                 ListHeaderComponent={this.renderHeader}
                 numColumns={3}
                 keyExtractor={this.keyExtractor}
-                extraData={this.state.price}
+                extraData={this.state.price.length}
             />
             </View>
         );
     }
 
     private renderListItem = ({item}: {item: any, ele: any}): React.ReactElement => {
-        // console.log(this.state.stockEndPrice, 'dj')
         return (
             <TouchableOpacity style={styles.dateContainer} onPress={this.handlePress}>
                 <View style={styles.box}>
                     <Text style={styles.itemStyle}>
                         {item}
                     </Text>
-                    <Text>
-                        {this.state.price.map(stockPrice => {
-                            return stockPrice.fields.Close;
-                        })}
-                    </Text>
+                    {
+                        this.state.price.map((input) => {
+                            if (item === new Date(Date.parse(input.fields.Date)).getDay()) {
+                                return <Text>
+                                    {input.fields.Close}
+                                </Text>;
+                            }
+                        });
+                    }
                 </View>
             </TouchableOpacity>
         );
