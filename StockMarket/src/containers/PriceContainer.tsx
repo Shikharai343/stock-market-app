@@ -29,6 +29,7 @@ class PriceContainer extends Component <IProps> {
                         title='Save'
                         onPress={() => this.props.navigation.getParam('updateState')(this.state.text)}
                     />
+                    <View style={{width: 10}}/>
                     <Button
                         title='Delete'
                         color='#b8092c'
