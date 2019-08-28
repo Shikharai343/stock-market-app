@@ -14,10 +14,6 @@ export default class HomeScreen extends Component<IProps, any> {
         header: null,
     };
 
-    public handlePress = () => {
-        this.props.navigation.navigate(RouteNames.stock);
-    }
-
     public render() {
         return (
             <ScrollView>

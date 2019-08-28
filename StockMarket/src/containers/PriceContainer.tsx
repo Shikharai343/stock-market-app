@@ -27,6 +27,7 @@ class PriceContainer extends Component <IProps> {
                 <View style={styles.buttons}>
                     <Button
                         title='Save'
+                        testID="saveButton"
                         onPress={() => this.props.navigation.getParam('updateState')(this.state.text)}
                     />
                     <View style={{width: 10}}/>
