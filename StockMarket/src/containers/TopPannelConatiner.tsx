@@ -82,7 +82,7 @@ class TopPannelConatiner extends Component<IProps, IState> {
                 });
             }else {
                 base('stock market').create({
-                    "Date": `2019-06-0${item}`,
+                    "Date": `2019-06-${item}`,
                     "Close": text,
                 }, function(err: any, record: any) {
                     if (err) {
