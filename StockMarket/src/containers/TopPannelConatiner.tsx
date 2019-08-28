@@ -40,11 +40,12 @@ class TopPannelConatiner extends Component<IProps, IState> {
         });
     }
 
-    public handlePress = (item: object, itemPrice?: undefined | string, updateState?: any) => {
+    public handlePress = (item: object, itemPrice?: undefined | string, updateState?: any, deleteData?: any) => {
         this.props.navigation.navigate(RouteNames.stock, {
             item,
             itemPrice,
             updateState,
+            deleteData,
         });
     };
 
@@ -68,18 +69,28 @@ class TopPannelConatiner extends Component<IProps, IState> {
                                     .find((input: any) => item === new Date(input.fields.Date).getDate());
 
         const updateState = (text: any) => {
-
             const base = new Airtable({apiKey: 'keyiMCbcYlCf5VXsP'}).base('appaf01a2JbZoZNee');
 
-            base('stock market').update(itemPrice.id, {
-                "Close": text
-            }, function(err: any, record: any) {
-                if (err) {
-                    console.error(err);
-                    return;
-                }
-
-            });
+            if(itemPrice !== undefined){
+                base('stock market').update(itemPrice.id, {
+                    "Close": text
+                }, function(err: any, record: any) {
+                    if (err) {
+                        console.error(err);
+                        return;
+                    }
+                });
+            }else {
+                base('stock market').create({
+                    "Date": `2019-06-0${item}`,
+                    "Close": text,
+                }, function(err: any, record: any) {
+                    if (err) {
+                        console.error(err);
+                        return;
+                    }
+                });
+            }
 
             const resetAction = StackActions.reset({
                 index: 0,
@@ -88,7 +99,30 @@ class TopPannelConatiner extends Component<IProps, IState> {
             this.props.navigation.dispatch(resetAction);
         };
 
-        const handleItemPress = () => this.handlePress(item, itemPrice && itemPrice.fields.Close, updateState);
+        const deleteData = () => {
+            var base = new Airtable({apiKey: 'keyiMCbcYlCf5VXsP'}).base('appaf01a2JbZoZNee');
+
+            if(itemPrice !== undefined) {
+                base('stock market').destroy(itemPrice.id, function(err: any, deletedRecord: any) {
+                    if (err) {
+                        console.error(err);
+                        return;
+                    }
+                });
+            }
+
+            const resetAction = StackActions.reset({
+                index: 0,
+                actions: [NavigationActions.navigate({ routeName: 'Home' })],
+            });
+            this.props.navigation.dispatch(resetAction);
+        };
+
+        const handleItemPress = () => this.handlePress(
+            item,
+            itemPrice && itemPrice.fields.Close,
+            updateState, deleteData
+        );
 
         return (
             <TouchableOpacity style={styles.dateContainer} onPress={handleItemPress}>
@@ -99,7 +133,7 @@ class TopPannelConatiner extends Component<IProps, IState> {
                     {
                         itemPrice &&
                         <Text>
-                            {itemPrice.fields.Close}
+                            ${itemPrice.fields.Close}
                         </Text>
                     }
                 </View>
@@ -140,9 +174,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         height: 70,
+        marginBottom: 5,
+        backgroundColor: '#5b73ba'
     },
     textStyle: {
         fontFamily: 'Georgia-Bold',
+        color: 'white',
         fontSize: 25,
         letterSpacing: 0.13,
     },
