@@ -1,6 +1,6 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
-import {shallow, ShallowWrapper} from 'enzyme';
+import {shallow} from 'enzyme';
 import TopPannelConatiner from '../../src/containers/TopPannelConatiner';
 
 const createTestProps = (props: Object) => ({
@@ -9,7 +9,7 @@ const createTestProps = (props: Object) => ({
 let wrapper: any;
 let props: any;
 
-describe('BottomPannelContainer testing', () => {
+describe('TopPannelContainer testing', () => {
     props = createTestProps({});
     wrapper = shallow(<TopPannelConatiner {...props}/>);
 

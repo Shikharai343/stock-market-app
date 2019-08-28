@@ -13,10 +13,10 @@ const mockNavigation = {
 };
 let wrapper: any;
 
-describe('Snapshot testing', () => {
+describe('Price Container testing', () => {
     wrapper = shallow(<PriceContainer  navigation={mockNavigation.navigation}/>);
 
-    it('should create a snapshot of the StockPrice Screen', () => {
+    it('should create a snapshot of the Price Container', () => {
         const tree = renderer.create(wrapper).toJSON();
         expect(tree).toMatchSnapshot();
     });
