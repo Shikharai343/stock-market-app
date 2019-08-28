@@ -1,32 +1,33 @@
 import React, { Component } from 'react';
-import {FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {RouteNames} from '../navigation/routes';
+import Airtable from 'airtable';
 import axios from 'axios';
+import {NavigationActions, StackActions} from 'react-navigation';
 
 interface IState {
     dataSource: object;
-    price: object[];
-    stockEndPrice: string[] ;
+    stockData: object[];
 }
 
 interface IProps {
     navigation: {
-        navigate: (route: string) => void;
+        navigate: (route: string, data: object) => void;
+        dispatch: any;
     };
 }
 
 class TopPannelConatiner extends Component<IProps, IState> {
     public state = {
         dataSource: {},
-        price: [],
-        stockEndPrice: [],
+        stockData: [],
     };
 
     public componentDidMount() {
         axios.get('https://api.airtable.com/v0/appaf01a2JbZoZNee/stock%20market?api_key=keyiMCbcYlCf5VXsP')
             .then((res) => {
                 this.setState({
-                    price: res.data.records,
+                    stockData: res.data.records,
                 });
 
             });
@@ -39,9 +40,13 @@ class TopPannelConatiner extends Component<IProps, IState> {
         });
     }
 
-    public handlePress = () => {
-        this.props.navigation.navigate(RouteNames.stock);
-    }
+    public handlePress = (item: object, itemPrice?: undefined | string, updateState?: any) => {
+        this.props.navigation.navigate(RouteNames.stock, {
+            item,
+            itemPrice,
+            updateState,
+        });
+    };
 
     public render() {
        return (
@@ -52,27 +57,50 @@ class TopPannelConatiner extends Component<IProps, IState> {
                 ListHeaderComponent={this.renderHeader}
                 numColumns={3}
                 keyExtractor={this.keyExtractor}
-                extraData={this.state.price.length}
+                extraData={this.state.stockData.length}
             />
             </View>
         );
     }
 
-    private renderListItem = ({item}: {item: any, ele: any}): React.ReactElement => {
+    private renderListItem = ({item}: {item: any}): React.ReactElement => {
+        const itemPrice = this.state.stockData
+                                    .find((input: any) => item === new Date(input.fields.Date).getDate());
+
+        const updateState = (text: any) => {
+
+            const base = new Airtable({apiKey: 'keyiMCbcYlCf5VXsP'}).base('appaf01a2JbZoZNee');
+
+            base('stock market').update(itemPrice.id, {
+                "Close": text
+            }, function(err: any, record: any) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+
+            });
+
+            const resetAction = StackActions.reset({
+                index: 0,
+                actions: [NavigationActions.navigate({ routeName: 'Home' })],
+            });
+            this.props.navigation.dispatch(resetAction);
+        };
+
+        const handleItemPress = () => this.handlePress(item, itemPrice && itemPrice.fields.Close, updateState);
+
         return (
-            <TouchableOpacity style={styles.dateContainer} onPress={this.handlePress}>
+            <TouchableOpacity style={styles.dateContainer} onPress={handleItemPress}>
                 <View style={styles.box}>
                     <Text style={styles.itemStyle}>
                         {item}
                     </Text>
                     {
-                        this.state.price.map((input) => {
-                            if (item === new Date(Date.parse(input.fields.Date)).getDay()) {
-                                return <Text>
-                                    {input.fields.Close}
-                                </Text>;
-                            }
-                        });
+                        itemPrice &&
+                        <Text>
+                            {itemPrice.fields.Close}
+                        </Text>
                     }
                 </View>
             </TouchableOpacity>

@@ -15,7 +15,7 @@ export default class StockPriceScreen extends Component<IProps, any> {
     public render() {
         return (
             <View style={styles.container}>
-                <PriceContainer />
+                <PriceContainer navigation={this.props.navigation}/>
             </View>
         );
     }

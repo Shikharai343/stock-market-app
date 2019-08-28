@@ -1,37 +1,30 @@
 import React, {Component, Fragment} from 'react';
-import {Button, Image, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
-import Icon from 'react-native-vector-icons';
+import { Button, StyleSheet, TextInput } from 'react-native';
 
-interface IState {
-    price: string;
+interface IProps {
+    navigation: {
+        getParam: (query: string) => any;
+    };
 }
 
-class PriceContainer extends Component<any, IState> {
-    constructor(props: any) {
+class PriceContainer extends Component <IProps> {
+    constructor(props: IProps) {
         super(props);
         this.state = {
-            price: '',
+            text: this.props.navigation.getParam('itemPrice'),
         };
     }
 
-    public onChange = (price: any) => {
-        this.setState({price});
-    }
-
-    public handleClick = () => {
-        // Todo
-    }
-
-    public render() {
+    render() {
         return (
             <Fragment>
                 <TextInput
                     style={styles.inputStyle}
-                    onChangeText={this.onChange}
-                    value={this.state.price}
+                    onChangeText={(text)=> this.setState({text})}
+                    value={this.state.text}
                     keyboardType={'numeric'}
                 />
-                <Button title={'Save'} onPress={this.handleClick} />
+                <Button title={'Save'} onPress={() => this.props.navigation.getParam('updateState')(this.state.text)} />
             </Fragment>
         );
     }
